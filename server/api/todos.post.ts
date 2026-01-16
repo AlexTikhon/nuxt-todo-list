@@ -1,4 +1,4 @@
-type Todo = { id: number; title: string; done: boolean };
+import { getTodos, type Todo } from "./_todos.store";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody<{ title?: string }>(event);
@@ -9,10 +9,7 @@ export default defineEventHandler(async (event) => {
     return { message: "title is required" };
   }
 
-  const g = globalThis as any;
-  if (!g.__todos) g.__todos = [];
-  const todos = g.__todos as Todo[];
-
+  const todos = getTodos();
   const newTodo: Todo = { id: Date.now(), title, done: false };
   todos.unshift(newTodo);
 

@@ -1,15 +1,15 @@
-import { getTodos } from "../../_todos.store";
+import { getTodos } from "../_todos.store";
 
 export default defineEventHandler((event) => {
   const id = Number(event.context.params?.id);
   const todos = getTodos();
 
-  const todo = todos.find((t) => t.id === id);
-  if (!todo) {
+  const idx = todos.findIndex((t) => t.id === id);
+  if (idx < 0) {
     setResponseStatus(event, 404);
     return { message: "todo not found" };
   }
 
-  todo.done = !todo.done;
-  return todo;
+  todos.splice(idx, 1);
+  return { ok: true };
 });

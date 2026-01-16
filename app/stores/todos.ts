@@ -9,6 +9,10 @@ export const useTodosStore = defineStore("todos", {
     error: "" as string,
   }),
 
+  getters: {
+    pendingCount: (s) => s.items.filter((t) => !t.done).length,
+  },
+
   actions: {
     async fetchTodos() {
       this.loading = true;
@@ -48,6 +52,26 @@ export const useTodosStore = defineStore("todos", {
         if (idx >= 0) this.items[idx] = updated;
       } catch (e: any) {
         this.error = e?.data?.message || e?.message || "Failed to toggle todo";
+      }
+    },
+
+    async deleteTodo(id: number) {
+      this.error = "";
+      try {
+        await $fetch(`/api/todos/${id}`, { method: "DELETE" });
+        this.items = this.items.filter((t) => t.id !== id);
+      } catch (e: any) {
+        this.error = e?.data?.message || e?.message || "Failed to delete todo";
+      }
+    },
+
+    async clearAll() {
+      this.error = "";
+      try {
+        await $fetch("/api/todos", { method: "DELETE" });
+        this.items = [];
+      } catch (e: any) {
+        this.error = e?.data?.message || e?.message || "Failed to clear todos";
       }
     },
   },
